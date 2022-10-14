@@ -2,12 +2,13 @@
   <div class="user-games">
     <games-list :games="games" @setState="setGameState" @deleteGameSave="deleteGameSave"/>
   </div>
+  <button @click="$router.push({path: '/game/create'})">Создать новую</button>
 </template>
 
 <script>
 import GamesList from "@/components/GamesList";
 import {ax} from '@/api/defaults'
-import game from '@/mixins/game'
+import game from '@/mixins/gameDelete'
 
 export default {
   name: "UserGames",

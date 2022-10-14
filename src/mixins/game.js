@@ -1,14 +1,16 @@
 import {ax} from "@/api/defaults";
 
 export default {
+  data () {
+    return {
+      game: {}
+    }
+  },
   methods: {
-    async deleteGame (gamePk) {
-      let games = localStorage.getItem('games')
-      let newGames = JSON.parse(games).filter(game => game !== gamePk)
-      localStorage.setItem('games', JSON.stringify(newGames))
-
+    async fetchGame (gamePk) {
       try {
-        await ax.post('game/delete-detail/', {pk: gamePk})
+        const response = await ax.post('game/detail/', {pk: gamePk})
+        return response.data
       } catch (e) {
         console.log(e)
       }

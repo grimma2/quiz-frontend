@@ -4,6 +4,7 @@ import UserGames from "@/views/UserGames";
 import CodeInput from "@/views/CodeInput";
 import GameDetail from "@/views/GameDetail";
 import GameEdit from "@/views/GameEdit";
+import GameCreate from "@/views/GameCreate";
 
 const routes = [
   {
@@ -25,6 +26,10 @@ const routes = [
   {
     path: '/game/:pk/edit',
     component: GameEdit
+  },
+  {
+    path: '/game/create',
+    component: GameCreate
   }
 ]
 

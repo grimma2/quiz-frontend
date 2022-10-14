@@ -29,23 +29,20 @@
       @setState="setGameState"
       @deleteGameSave="deleteGameSave"
     />
+    <button @click="$router.push({path: `/game/${game.pk}/edit`})">Редактировать</button>
   </div>
 </template>
 
 <script>
 import {ax} from '@/api/defaults'
 import GameControls from "@/components/GameControls";
+import gameDelete from '@/mixins/gameDelete'
 import game from '@/mixins/game'
 
 export default {
   name: "GameDetail",
   components: {GameControls},
-  mixins: [game],
-  data () {
-    return {
-      game: {}
-    }
-  },
+  mixins: [gameDelete, game],
   methods: {
     async generateTeamCodes () {
       try {
@@ -64,12 +61,7 @@ export default {
     }
   },
   async mounted () {
-    try {
-      const response = await ax.post('game/detail/', {pk: this.$route.params.pk})
-      this.game = response.data
-    } catch (e) {
-      console.log(e)
-    }
+    this.game = await this.fetchGame(this.$route.params.pk)
   }
 }
 </script>
