@@ -56,12 +56,30 @@ export default {
       this.deleteGame(gamePk)
       this.$router.push({path: '/games'})
     },
-    setGameState (gamePk, gameState) {
+    setGameState (gameState, gamePk) {
+      let socket = this.$store.state.game.gameSocket
+      try {
+        socket.send(JSON.stringify({
+          'type': 'change_state',
+          'game_state': gameState
+        }))
+      } catch (e) {
+        window.location.reload()
+      }
+
+      socket.onclose = () => {
+        this.$store.dispatch('game/makeGameSocket', this.game.pk)
+        this.setListeners()
+      }
+
       this.game.game_state = gameState
-    }
+    },
+    setListeners () {}
   },
   async mounted () {
     this.game = await this.fetchGame(this.$route.params.pk)
+    this.$store.dispatch('game/makeGameSocket', this.game.pk)
+    this.setListeners()
   }
 }
 </script>

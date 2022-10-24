@@ -1,5 +1,15 @@
 import axios from 'axios'
 
+
+export const backendHost = 'localhost:8000'
+
 export const ax = axios.create({
-  baseURL: `${location.protocol}//localhost:8000/api/v1/`
+  baseURL: `${location.protocol}//${backendHost}/api/v1/`
 })
+
+
+export const teamSocketEvents = {
+  'next_question': 'team/nextQuestion',
+  'change_state': 'team/changeGameState',
+  'update_leader_board': 'team/updateLeaderBoard'
+}

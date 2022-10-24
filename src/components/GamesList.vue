@@ -29,8 +29,8 @@ export default {
     }
   },
   methods: {
-    setState (gamePk, gameState) {
-      this.$emit('setState', gamePk, gameState)
+    setState (gameState, gamePk) {
+      this.$emit('setState', gameState, gamePk)
     },
     deleteGameSave (gamePk) {
       this.$emit('deleteGameSave', gamePk)

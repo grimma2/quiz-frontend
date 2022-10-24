@@ -1,10 +1,10 @@
 import { createStore } from 'vuex'
-import {events} from '@/store/events'
-import {games} from '@/store/games'
+import {team} from '@/store/team'
+import {game} from '@/store/game'
 
 export default createStore({
   modules: {
-    events: events,
-    games: games
+    team: team,
+    game: game
   }
 })

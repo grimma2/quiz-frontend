@@ -28,13 +28,26 @@ export default {
         console.log(e)
       }
     },
-    setGameState (gamePk, gameState) {
+    setGameState (gameState, gamePk) {
+      this.$store.dispatch('game/makeGameSocket', gamePk)
+
+      setTimeout(() => {
+        try {
+          this.$store.state.game.gameSocket.send(JSON.stringify({
+            type: 'change_state',
+            game_state: gameState
+          }))
+        } catch (e) {
+          window.location.reload()
+        }
+        this.$store.state.game.gameSocket.close()
+      }, 1000)
+
       for (let game of this.games) {
         if (gamePk === game.pk) {
           game.game_state = gameState
         }
       }
-      this.$store.dispatch('events/setGameState', gamePk, gameState)
     },
     deleteGameSave (gamePk) {
       this.deleteGame(gamePk)

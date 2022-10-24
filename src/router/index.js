@@ -5,6 +5,7 @@ import CodeInput from "@/views/CodeInput";
 import GameDetail from "@/views/GameDetail";
 import GameEdit from "@/views/GameEdit";
 import GameCreate from "@/views/GameCreate";
+import TeamPlay from "@/views/TeamPlay";
 
 const routes = [
   {
@@ -30,6 +31,10 @@ const routes = [
   {
     path: '/game/create',
     component: GameCreate
+  },
+  {
+    path: '/play/team/:code',
+    component: TeamPlay
   }
 ]
 
