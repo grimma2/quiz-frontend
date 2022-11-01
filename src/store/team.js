@@ -2,6 +2,8 @@ import {ax, backendHost} from "@/api/defaults";
 
 export const team = {
   state: () => ({
+    questionTime: 0,
+    timer: 0,
     teamSocket: false,
     gameState: 'OFF',
     activeQuestion: {},
@@ -22,6 +24,13 @@ export const team = {
     },
     setGameState (state, gameState) {
       state.gameState = gameState
+    },
+    setQuestionTime (state, questionTime) {
+      state.questionTime = questionTime
+    },
+    setTimer (state, timer) {
+      console.log('setTimer...')
+      state.timer = timer
     }
   },
   actions: {
@@ -33,7 +42,7 @@ export const team = {
     async fetchLeaderBoard ({commit}, code) {
       console.log(`fetchLeaderBoard... code ${code}`)
       try {
-        const response = await ax.post('game/get-leader-board/', {code: code})
+        const response = await ax.post('game/get/leader-board/', {code: code})
         commit('setLeaderBoard', response.data)
       } catch (e) {
         console.log(e)
@@ -47,21 +56,23 @@ export const team = {
         console.log(e)
       }
     },
-    changeGameState ({commit, dispatch}, {eventData, code}) {
+    changeGameState ({commit, dispatch, state}, {eventData, code}) {
       console.log(`state: ${eventData}, code: ${code}`)
       if (eventData === 'OFF') {
         dispatch('fetchLeaderBoard', code)
       } else if (eventData === 'ON') {
         document.cookie = 'inGame=1; expires=Fri, 31 Dec 9999 23:59:59 GMT'
+        commit('setTimer', state.questionTime)
         dispatch('fetchQuestion', code)
       }
       commit('setGameState', eventData)
     },
-    nextQuestion ({commit}, {eventData, code}) {
+    nextQuestion ({commit, state}, {eventData, code}) {
       console.log('nextQuestion action')
       if (eventData.correct_answers) {
         // if 'eventData' has this property then 'eventData' this question
         // esle this leader_board
+        commit('setTimer', state.questionTime)
         commit('setActiveQuestion', eventData)
       } else {
         commit('setLeaderBoard', eventData)
@@ -75,6 +86,14 @@ export const team = {
       state.teamSocket.send(JSON.stringify({
         type: 'next_question'
       }))
+    },
+    async fetchQuestionTime ({commit}, code) {
+      try {
+        const response = await ax.post('game/get/question-time/', {code: code})
+        commit('setQuestionTime', response.data.time)
+      } catch (e) {
+        console.log(e)
+      }
     }
   },
   namespaced: true

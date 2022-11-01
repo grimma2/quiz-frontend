@@ -27,12 +27,12 @@ export default {
   mixins: [cookie, objectIsEmpty],
   methods: {
     socketIsValid(socket) {
-      console.log(socket)
       setTimeout(() => {
+        console.log(socket.readyState)
         if (!socket.readyState) {
           this.$router.push({path: '/code-input'})
         }
-      }, 1000)
+      }, 1500)
     },
     async setQuestionOrBoard () {
       console.log('setQuestionOrBoard...')
@@ -41,6 +41,7 @@ export default {
         console.log(response.data)
         if (response.data.active_question) {
           this.$store.commit('team/setActiveQuestion', response.data.active_question)
+          this.$store.commit('team/setTimer', response.data.timer)
         } else if (response.data.leader_board) {
           this.$store.commit('team/setLeaderBoard', response.data.leader_board)
         }
@@ -52,7 +53,7 @@ export default {
     setListeners (socket) {
       socket.onmessage = (e) => {
         let data = JSON.parse(e.data)
-
+        console.log(data)
         let action = teamSocketEvents[data['event']]
         this.$store.dispatch(
           action,
@@ -68,6 +69,8 @@ export default {
     this.$store.dispatch('team/makeTeamSocket', this.$route.params.code)
     let socket = this.$store.state.team.teamSocket
     this.socketIsValid(socket)
+    // if socket is valid fetch question time for timer
+    this.$store.dispatch('team/fetchQuestionTime', this.$route.params.code)
 
     if (this.cookiesIsExists('inGame')) this.setQuestionOrBoard()
 

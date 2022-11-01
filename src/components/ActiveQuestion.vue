@@ -1,6 +1,6 @@
 <template>
   <div class="active-question">
-    <span>question timer</span>
+    <span>{{ timerUI }}</span>
     <p>{{ question.text }}</p>
     <span>В этом вопросе нужно ввести {{ question.correct_answers.length }} ответов</span>
     <div>
@@ -28,7 +28,9 @@ export default {
     return {
       inputAnswers: [],
       currentInput: '',
-      error: ''
+      error: '',
+      timerUI: '',
+      timerIntervalId: false
     }
   },
   props: {
@@ -73,7 +75,30 @@ export default {
         }
       }
       if (answerIsValid) this.$store.dispatch('team/sendNextQuestion')
+    },
+    countdown () {
+      let time = this.$store.state.team.timer
+      let minutes = Math.floor(time / 60)
+      let seconds = time % 60
+
+      if (seconds < 10) {
+        seconds = '0' + seconds
+      }
+      if (minutes < 10) {
+        minutes = '0' + minutes
+      }
+
+      this.timerUI = `${minutes}:${seconds}`
+      time--
+      this.$store.commit('team/setTimer', time)
+
+      if (time <= 0) {
+        clearInterval(this.timerIntervalId)
+      }
     }
+  },
+  mounted () {
+    this.timerIntervalId = setInterval(this.countdown, 1000)
   }
 }
 </script>
