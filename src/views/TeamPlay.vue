@@ -54,11 +54,11 @@ export default {
       socket.onmessage = (e) => {
         let data = JSON.parse(e.data)
         console.log(data)
-        let action = teamSocketEvents[data['event']]
+        let action = teamSocketEvents[data.event]
         this.$store.dispatch(
           action,
           {
-            eventData: data['event_data'],
+            eventData: data.event_data,
             code: this.$route.params.code
           }
         )

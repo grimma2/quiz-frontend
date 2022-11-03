@@ -30,7 +30,6 @@ export default {
       currentInput: '',
       error: '',
       timerUI: '',
-      timerIntervalId: false
     }
   },
   props: {
@@ -93,12 +92,17 @@ export default {
       this.$store.commit('team/setTimer', time)
 
       if (time <= 0) {
-        clearInterval(this.timerIntervalId)
+        try {
+          // interval may already clear before
+          clearInterval(this.$store.state.team.timerIntervalId)
+        } catch (e) {}
       }
     }
   },
   mounted () {
-    this.timerIntervalId = setInterval(this.countdown, 1000)
+    this.$store.commit(
+      'team/setTimerIntervalId', setInterval(this.countdown, 1000)
+    )
   }
 }
 </script>

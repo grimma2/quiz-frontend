@@ -20,6 +20,9 @@ export const game = {
       )
       commit('setGameSocket', gameSocket)
       gameSocket.onclose = (e) => {console.log(e)}
+    },
+    changeGameState ({commit}, eventData) {
+
     }
   },
   namespaced: true

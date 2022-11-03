@@ -4,6 +4,7 @@ export const team = {
   state: () => ({
     questionTime: 0,
     timer: 0,
+    timerIntervalId: false,
     teamSocket: false,
     gameState: 'OFF',
     activeQuestion: {},
@@ -29,8 +30,14 @@ export const team = {
       state.questionTime = questionTime
     },
     setTimer (state, timer) {
-      console.log('setTimer...')
       state.timer = timer
+    },
+    setTimerIntervalId (state, timerIntervalId) {
+      state.timerIntervalId = timerIntervalId
+    },
+    clearTimerInterval (state) {
+      clearInterval(state.timerIntervalId)
+      state.timerIntervalId = false
     }
   },
   actions: {
@@ -60,6 +67,7 @@ export const team = {
       console.log(`state: ${eventData}, code: ${code}`)
       if (eventData === 'OFF') {
         dispatch('fetchLeaderBoard', code)
+        commit('clearTimerInterval')
       } else if (eventData === 'ON') {
         document.cookie = 'inGame=1; expires=Fri, 31 Dec 9999 23:59:59 GMT'
         commit('setTimer', state.questionTime)
@@ -76,6 +84,7 @@ export const team = {
         commit('setActiveQuestion', eventData)
       } else {
         commit('setLeaderBoard', eventData)
+        commit('clearTimerInterval')
       }
     },
     updateLeaderBoard ({commit}, {eventData, code}) {
@@ -83,6 +92,7 @@ export const team = {
       commit('setLeaderBoard', eventData)
     },
     sendNextQuestion ({state}) {
+      console.log('sendNextQuestion...')
       state.teamSocket.send(JSON.stringify({
         type: 'next_question'
       }))

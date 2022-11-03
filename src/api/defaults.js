@@ -13,3 +13,7 @@ export const teamSocketEvents = {
   'change_state': 'team/changeGameState',
   'update_leader_board': 'team/updateLeaderBoard'
 }
+
+export const gameSocketEvents = {
+  'change_state': 'game/changeGameState'
+}

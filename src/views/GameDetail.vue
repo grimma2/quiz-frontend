@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import {ax} from '@/api/defaults'
+import {ax, gameSocketEvents} from '@/api/defaults'
 import GameControls from "@/components/GameControls";
 import gameDelete from '@/mixins/gameDelete'
 import game from '@/mixins/game'
@@ -74,7 +74,18 @@ export default {
 
       this.game.game_state = gameState
     },
-    setListeners () {}
+    setListeners () {
+      let socket = this.$store.state.game.gameSocket
+      socket.onmessage = (e) => {
+        let data = JSON.parse(e.data)
+
+        let action = gameSocketEvents[data.event]
+        this.$store.dispatch(
+          action,
+          {eventData: data.event_data}
+        )
+      }
+    }
   },
   async mounted () {
     this.game = await this.fetchGame(this.$route.params.pk)
