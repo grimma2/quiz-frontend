@@ -8,7 +8,8 @@ export const team = {
     teamSocket: false,
     gameState: 'OFF',
     activeQuestion: {},
-    leaderBoard: {}
+    leaderBoard: {},
+    notHaveLeaderBoard: false
   }),
   getters: {},
   mutations: {
@@ -38,6 +39,9 @@ export const team = {
     clearTimerInterval (state) {
       clearInterval(state.timerIntervalId)
       state.timerIntervalId = false
+    },
+    setNotHaveLeaderBoard (state, notHaveLeaderBoard) {
+      state.notHaveLeaderBoard = notHaveLeaderBoard
     }
   },
   actions: {
@@ -69,7 +73,6 @@ export const team = {
         dispatch('fetchLeaderBoard', code)
         commit('clearTimerInterval')
       } else if (eventData === 'ON') {
-        document.cookie = 'inGame=1; expires=Fri, 31 Dec 9999 23:59:59 GMT'
         commit('setTimer', state.questionTime)
         dispatch('fetchQuestion', code)
       }
@@ -91,10 +94,11 @@ export const team = {
       console.log('updateLeaderBoard action')
       commit('setLeaderBoard', eventData)
     },
-    sendNextQuestion ({state}) {
+    sendNextQuestion ({state}, bonusPoints) {
       console.log('sendNextQuestion...')
       state.teamSocket.send(JSON.stringify({
-        type: 'next_question'
+        type: 'next_question',
+        bonus_points: bonusPoints
       }))
     },
     async fetchQuestionTime ({commit}, code) {

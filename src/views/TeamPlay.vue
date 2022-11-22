@@ -8,15 +8,22 @@
       :question="$store.state.team.activeQuestion"
       v-else-if="!objectIsEmpty($store.state.team.activeQuestion)"
     />
-    <p class="not-in-game" v-else>Организатор пока что ещё не запустил игру</p>
+    <div class="not-have-leader-board" v-else-if="$store.state.team.notHaveLeaderBoard">
+      <div class="not-have-container">
+        <p class="text">Пока ещё не проводилось ни одного сеанса игры</p>
+        <button class="exit-button" @click="$router.push({path: '/code-input'})">Выйти</button>
+      </div>
+    </div>
+    <div class="wait" v-else>
+      <p class="text">Организатор пока что ещё не запустил игру</p>
+    </div>
   </div>
 </template>
 
 <script>
 import {ax, teamSocketEvents} from "@/api/defaults";
 
-import cookie from "@/mixins/cookie";
-import objectIsEmpty from "@/mixins/objectIsEmpty";
+import objectIsEmpty from "@/mixins/addMethods/objectIsEmpty";
 
 import ActiveQuestion from "@/components/ActiveQuestion";
 import LeaderBoard from "@/components/LeaderBoard";
@@ -24,12 +31,12 @@ import LeaderBoard from "@/components/LeaderBoard";
 export default {
   name: "TeamPlay",
   components: {LeaderBoard, ActiveQuestion},
-  mixins: [cookie, objectIsEmpty],
+  mixins: [objectIsEmpty],
   methods: {
     socketIsValid(socket) {
       setTimeout(() => {
         console.log(socket.readyState)
-        if (!socket.readyState) {
+        if (!(socket.readyState === 1)) {
           this.$router.push({path: '/code-input'})
         }
       }, 1500)
@@ -37,13 +44,15 @@ export default {
     async setQuestionOrBoard () {
       console.log('setQuestionOrBoard...')
       try {
-        const response = await ax.post('team/get-data/', {code: this.$route.params.code})
+        const response = await ax.post('team/get-data/', {code: this.$route.params.code.toUpperCase()})
         console.log(response.data)
         if (response.data.active_question) {
           this.$store.commit('team/setActiveQuestion', response.data.active_question)
           this.$store.commit('team/setTimer', response.data.timer)
         } else if (response.data.leader_board) {
           this.$store.commit('team/setLeaderBoard', response.data.leader_board)
+        } else {
+          this.$store.commit('team/setNotHaveLeaderBoard', true)
         }
         this.$store.commit('team/setGameState', response.data.game_state)
       } catch (e) {
@@ -59,26 +68,49 @@ export default {
           action,
           {
             eventData: data.event_data,
-            code: this.$route.params.code
+            code: this.$route.params.code.toUpperCase()
           }
         )
       }
     }
   },
   mounted () {
-    this.$store.dispatch('team/makeTeamSocket', this.$route.params.code)
+    this.$store.dispatch('team/makeTeamSocket', this.$route.params.code.toUpperCase())
     let socket = this.$store.state.team.teamSocket
     this.socketIsValid(socket)
     // if socket is valid fetch question time for timer
-    this.$store.dispatch('team/fetchQuestionTime', this.$route.params.code)
-
-    if (this.cookiesIsExists('inGame')) this.setQuestionOrBoard()
-
+    this.$store.dispatch('team/fetchQuestionTime', this.$route.params.code.toUpperCase())
+    this.setQuestionOrBoard()
     this.setListeners(socket)
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use "@/scss/globalDefaults";
+@import "@/scss/style.scss";
 
+.not-have-leader-board {
+  @include pageElement();
+  @include flexCentered();
+
+  .not-have-container {
+    > button {
+      margin-top: .5em;
+      @include button(red);
+    }
+  }
+}
+
+.wait {
+  @include pageElement();
+  @include flexCentered();
+}
+
+.text {
+  padding: 1em .5em;
+  border-radius: globalDefaults.$smallBorderRadius;
+  background-color: deepskyblue;
+  color: white;
+}
 </style>
