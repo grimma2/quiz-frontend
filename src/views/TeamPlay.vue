@@ -1,4 +1,5 @@
 <template>
+  <img class="back-button-arrow" @click="back" src="@/assets/right-arrow.png">
   <div class="team-play">
     <leader-board
       :leader-board="$store.state.team.leaderBoard"
@@ -27,11 +28,12 @@ import objectIsEmpty from "@/mixins/addMethods/objectIsEmpty";
 
 import ActiveQuestion from "@/components/ActiveQuestion";
 import LeaderBoard from "@/components/LeaderBoard";
+import back from "@/mixins/addMethods/back";
 
 export default {
   name: "TeamPlay",
   components: {LeaderBoard, ActiveQuestion},
-  mixins: [objectIsEmpty],
+  mixins: [objectIsEmpty, back],
   methods: {
     socketIsValid(socket) {
       setTimeout(() => {
@@ -75,6 +77,8 @@ export default {
     }
   },
   mounted () {
+    console.log(this.$route.params.code)
+    console.log(this.$route.params.code.toUpperCase())
     this.$store.dispatch('team/makeTeamSocket', this.$route.params.code.toUpperCase())
     let socket = this.$store.state.team.teamSocket
     this.socketIsValid(socket)
