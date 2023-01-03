@@ -44,9 +44,6 @@
           draggable="true"
           @dragstart="dragStart"
           @dragend.prevent="dragEnd"
-          @dragenter=""
-          @dragleave=""
-          @dragover.prevent=""
           @drop.prevent="dragDrop"
           v-for="ques in game.question_set.sort(sortCompare('order'))"
           v-if="game.question_set.length"
@@ -79,10 +76,30 @@
               >
             </div>
           </div>
-          <button
-            class="add-button add-answer"
-            @click.stop="showAnswerDialog(ques)"
-          >Добавить ответ</button>
+
+          <div class="bottom-controls">
+            <!--Выбор типа вопроса-->
+            <div class="question-choose">
+              <div
+                class="default-option"
+                :data-isactive="ques.question_type === 'default' ? 'true' : 'false'"
+                @click="ques.question_type = 'default'"
+              >
+                <p class="type-option">Обычный</p>
+              </div>
+              <div
+                class="blitz-option"
+                :data-isactive="ques.question_type === 'blitz' ? 'true' : 'false'"
+                @click="ques.question_type = 'blitz'"
+              >
+                <p class="type-option">Блитц</p>
+              </div>
+            </div>
+            <button
+              class="add-button add-answer"
+              @click.stop="showAnswerDialog(ques)"
+            >Добавить ответ</button>
+          </div>
         </div>
         <div class="empty" v-else>
           <p>Здесь будут появляться созданные вами вопросы</p>
@@ -342,8 +359,39 @@ $xSize: 1.2em;
       grid-column: 1/3;
     }
 
+    .bottom-controls {
+      grid-column: 1/3;
+      display: flex;
+      justify-content: space-between;
+
+      .question-choose {
+        width: 10em;
+        padding: .3em;
+        border-radius: globalDefaults.$smallBorderRadius;
+        background: grey;
+        display: grid;
+        grid-template-columns: repeat(2, calc(50% - .25em));
+        grid-column-gap: .5em;
+
+        > div {
+          border-radius: globalDefaults.$smallBorderRadius;
+          @include flexCentered();
+        }
+
+        > div[data-isactive="true"] {
+          background-color: yellow;
+        }
+
+        > div[data-isactive="false"] {
+          p {
+            color: white;
+          }
+        }
+      }
+    }
+
     button {
-      width: 10em;
+      width: 8em;
     }
   }
 }

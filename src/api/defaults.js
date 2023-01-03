@@ -12,7 +12,8 @@ export const ax = axios.create({
 export const teamSocketEvents = {
   'next_question': 'team/nextQuestion',
   'change_state': 'team/changeGameState',
-  'update_leader_board': 'team/updateLeaderBoard'
+  'update_leader_board': 'team/updateLeaderBoard',
+  'decrement_remain_answers': 'team/decrementRemainAnswers'
 }
 
 export const gameSocketEvents = {

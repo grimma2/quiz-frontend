@@ -46,11 +46,16 @@ export default {
     async setQuestionOrBoard () {
       console.log('setQuestionOrBoard...')
       try {
-        const response = await ax.post('team/get-data/', {code: this.$route.params.code.toUpperCase()})
+        const response = await ax.post('team/get/data/', {code: this.$route.params.code.toUpperCase()})
         console.log(response.data)
         if (response.data.active_question) {
           this.$store.commit('team/setActiveQuestion', response.data.active_question)
           this.$store.commit('team/setTimer', response.data.timer)
+
+          if (response.data.active_question.question_type === 'blitz') {
+            this.$store.commit('team/setRemainAnswers', response.data.remain_answers)
+          }
+
         } else if (response.data.leader_board) {
           this.$store.commit('team/setLeaderBoard', response.data.leader_board)
         } else {
@@ -77,8 +82,6 @@ export default {
     }
   },
   mounted () {
-    console.log(this.$route.params.code)
-    console.log(this.$route.params.code.toUpperCase())
     this.$store.dispatch('team/makeTeamSocket', this.$route.params.code.toUpperCase())
     let socket = this.$store.state.team.teamSocket
     this.socketIsValid(socket)

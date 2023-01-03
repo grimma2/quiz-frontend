@@ -7,7 +7,6 @@ export default {
       let newGames = games.filter(game => game !== gamePk)
       this.$store.commit('game/setGamesPks', newGames)
       await this.setGames(newGames)
-      console.log('after setGames call')
 
       try {
         await ax.post('game/delete-detail/', {pk: gamePk})
